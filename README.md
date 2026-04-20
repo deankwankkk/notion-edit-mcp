@@ -31,8 +31,8 @@ heading_1 ~ heading_3、paragraph、bulleted_list_item、numbered_list_item、ca
 ### 2. 安装
 
 ```bash
-git clone <your-repo-url>
-cd solution-hub-mcp
+git clone git@github.com:deankwankkk/notion-edit-mcp.git
+cd notion-edit-mcp
 npm install
 ```
 
@@ -51,9 +51,13 @@ SOLUTION_HUB_DB_ID=your_database_id_here
 
 **获取 Database ID：** 打开 Notion 数据库页面，URL 格式为 `https://www.notion.so/<workspace>/<database_id>?v=...`，中间那段就是 Database ID。
 
-### 4. 在 Claude Code 中配置
+### 4. 接入 MCP 客户端
 
-将以下配置添加到 `~/.claude/settings.json` 的 `mcpServers` 中：
+本服务基于 MCP 标准协议，兼容所有支持 MCP 的 AI 客户端。以下是各客户端的配置方式：
+
+#### Claude Code
+
+添加到 `~/.claude/settings.json`：
 
 ```json
 {
@@ -69,6 +73,74 @@ SOLUTION_HUB_DB_ID=your_database_id_here
     }
   }
 }
+```
+
+#### Cursor
+
+添加到 `~/.cursor/mcp.json`：
+
+```json
+{
+  "mcpServers": {
+    "solution-hub": {
+      "command": "npx",
+      "args": ["tsx", "/path/to/solution-hub-mcp/src/server.ts"],
+      "cwd": "/path/to/solution-hub-mcp",
+      "env": {
+        "NOTION_TOKEN": "ntn_your_token_here",
+        "SOLUTION_HUB_DB_ID": "your_database_id_here"
+      }
+    }
+  }
+}
+```
+
+#### Windsurf
+
+添加到 `~/.codeium/windsurf/mcp_config.json`：
+
+```json
+{
+  "mcpServers": {
+    "solution-hub": {
+      "command": "npx",
+      "args": ["tsx", "/path/to/solution-hub-mcp/src/server.ts"],
+      "cwd": "/path/to/solution-hub-mcp",
+      "env": {
+        "NOTION_TOKEN": "ntn_your_token_here",
+        "SOLUTION_HUB_DB_ID": "your_database_id_here"
+      }
+    }
+  }
+}
+```
+
+#### VS Code (GitHub Copilot)
+
+在项目根目录创建 `.vscode/mcp.json`：
+
+```json
+{
+  "servers": {
+    "solution-hub": {
+      "command": "npx",
+      "args": ["tsx", "/path/to/solution-hub-mcp/src/server.ts"],
+      "cwd": "/path/to/solution-hub-mcp",
+      "env": {
+        "NOTION_TOKEN": "ntn_your_token_here",
+        "SOLUTION_HUB_DB_ID": "your_database_id_here"
+      }
+    }
+  }
+}
+```
+
+#### 其他 MCP 客户端
+
+任何支持 MCP stdio 传输的客户端均可接入，启动命令为：
+
+```bash
+NOTION_TOKEN=ntn_xxx SOLUTION_HUB_DB_ID=xxx npx tsx /path/to/solution-hub-mcp/src/server.ts
 ```
 
 ## 多 Token / 多工作区管理
